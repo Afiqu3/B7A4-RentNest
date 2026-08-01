@@ -1,6 +1,7 @@
 import { prisma } from "../../lib/prisma";
 import {
   IRentalRequest,
+  IRentalRequestQuery,
   IRentalRequestUpdate,
 } from "./rentalRequest.interface";
 
@@ -95,8 +96,15 @@ const updateRentalRequestStatusIntoDB = async (
   return result;
 };
 
-const getAllRentalRequestFromDB = async () => {
-  const result = await prisma.rentalRequest.findMany({
+const getAllRentalRequestFromDB = async (query: IRentalRequestQuery) => {
+  const limit = query.limit ? Number(query.limit) : 10;
+  const page = query.page ? Number(query.page) : 1;
+  const skip = (page - 1) * limit;
+
+  const rentalRequests = await prisma.rentalRequest.findMany({
+    take: limit,
+    skip: skip,
+
     include: {
       property: {
         select: {
@@ -127,7 +135,17 @@ const getAllRentalRequestFromDB = async () => {
     },
   });
 
-  return result;
+  const totalRentalRequests = await prisma.rentalRequest.count();
+
+  return {
+    data: rentalRequests,
+    meta: {
+      page: page,
+      limit: limit,
+      total: totalRentalRequests,
+      totalPages: Math.ceil(totalRentalRequests / limit),
+    },
+  };
 };
 
 const getMyRenalRequestFromDB = async (landlordId: string) => {

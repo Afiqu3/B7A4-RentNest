@@ -48,13 +48,16 @@ const updateRentalRequestStatus = catchAsync(
 
 const getAllRentalRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await rentalRequestService.getAllRentalRequestFromDB();
+    const query = req.query;
+
+    const result = await rentalRequestService.getAllRentalRequestFromDB(query);
 
     sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,
       message: "All rental request retrieved successfully",
-      data: result,
+      data: result.data,
+      meta: result.meta,
     });
   },
 );
@@ -79,8 +82,7 @@ const getMyRequest = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const tenantId = req.user?.id as string;
 
-    const result =
-      await rentalRequestService.getMyRequestFromDB(tenantId);
+    const result = await rentalRequestService.getMyRequestFromDB(tenantId);
 
     sendResponse(res, {
       success: true,
