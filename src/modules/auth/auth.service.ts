@@ -168,12 +168,17 @@ const getAllUserFromDB = async (query: IUserQuery) => {
   const limit = query.limit ? Number(query.limit) : 10;
   const page = query.page ? Number(query.page) : 1;
   const skip = (page - 1) * limit;
+  // also add search by name
 
   const users = await prisma.user.findMany({
     where: {
       role: {
         in: [Role.LANDLORD, Role.TENANT],
       },
+      name: {
+        contains: query.search ? query.search : "",
+        mode: "insensitive",
+      }
     },
     omit: {
       password: true,

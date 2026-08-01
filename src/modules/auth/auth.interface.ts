@@ -12,4 +12,5 @@ export type IUserUpdatedPayload = z.infer<typeof updateProfileSchema>;
 export interface IUserQuery {
   page?: string;
   limit?: string;
+  search?: string;
 }
