@@ -96,7 +96,36 @@ const updateRentalRequestStatusIntoDB = async (
 };
 
 const getAllRentalRequestFromDB = async () => {
-  const result = await prisma.rentalRequest.findMany();
+  const result = await prisma.rentalRequest.findMany({
+    include: {
+      property: {
+        select: {
+          title: true,
+          location: true,
+          rentAmount: true,
+          landlord: {
+            select: {
+              name: true,
+              email: true,
+              phone: true,
+            }
+          }
+        },
+      },
+      tenant: {
+        select: {
+          name: true,
+          email: true,
+          phone: true,
+        },
+      },
+      payment: {
+        select: {
+          status: true,
+        },
+      },
+    },
+  });
 
   return result;
 };
