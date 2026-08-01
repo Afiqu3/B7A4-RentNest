@@ -201,7 +201,6 @@ const getAllAvailablePropertyFromDB = async (query: IPropertyQuery) => {
     include: {
       category: {
         select: {
-          id: true,
           name: true,
         },
       },
@@ -232,12 +231,18 @@ const getAllAvailablePropertyFromDB = async (query: IPropertyQuery) => {
   };
 };
 
-const getAllPropertyFromDB = async () => {
-  const result = await prisma.property.findMany({
+const getAllPropertyFromDB = async (query: IPropertyQuery) => {
+  const limit = query.limit ? Number(query.limit) : 10;
+  const page = query.page ? Number(query.page) : 1;
+  const skip = (page - 1) * limit;
+
+  const properties = await prisma.property.findMany({
+    take: limit,
+    skip: skip,
+
     include: {
       category: {
         select: {
-          id: true,
           name: true,
         },
       },
@@ -249,7 +254,17 @@ const getAllPropertyFromDB = async () => {
     },
   });
 
-  return result;
+  const totalProperties = await prisma.property.count();
+
+  return {
+    data: properties,
+    meta: {
+      page: page,
+      limit: limit,
+      total: totalProperties,
+      totalPages: Math.ceil(totalProperties / limit),
+    },
+  };
 };
 
 export const propertyService = {
