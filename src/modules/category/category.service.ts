@@ -12,7 +12,11 @@ const createCategoryIntoDB = async (payload: ICategory) => {
 };
 
 const getAllCategoryFromDB = async () => {
-  const result = await prisma.category.findMany();
+  const result = await prisma.category.findMany({
+    where: {
+      deletedAt: null,
+    },
+  });
 
   return result;
 };
@@ -42,10 +46,13 @@ const deleteCategoryFromDB = async (categoryId: string) => {
       id: categoryId,
     },
   });
-  
-  await prisma.category.delete({
+
+  await prisma.category.update({
     where: {
       id: categoryId,
+    },
+    data: {
+      deletedAt: new Date(),
     },
   });
 };
