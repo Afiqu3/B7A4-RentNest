@@ -3,6 +3,7 @@ import { prisma } from "../../lib/prisma";
 import {
   ILoginUser,
   IRegisterUserPayload,
+  IUserQuery,
   IUserUpdatedPayload,
 } from "./auth.interface";
 import config from "../../config";
@@ -163,8 +164,12 @@ const updateProfileIntoDB = async (
   return updatedUser;
 };
 
-const getAllUserFromDB = async () => {
-  const result = await prisma.user.findMany({
+const getAllUserFromDB = async (query: IUserQuery) => {
+  const limit = query.limit ? Number(query.limit) : 10;
+  const page = query.page ? Number(query.page) : 1;
+  const skip = (page - 1) * limit;
+
+  const users = await prisma.user.findMany({
     where: {
       role: {
         in: [Role.LANDLORD, Role.TENANT],
@@ -173,9 +178,22 @@ const getAllUserFromDB = async () => {
     omit: {
       password: true,
     },
+
+    take: limit,
+    skip: skip,
   });
 
-  return result;
+  const totalUsers = await prisma.user.count();
+
+  return {
+    data: users,
+    meta: {
+      page: page,
+      limit: limit,
+      total: totalUsers,
+      totalPages: Math.ceil(totalUsers / limit),
+    },
+  };
 };
 
 const updateUsersActiveStatusIntoDB = async (

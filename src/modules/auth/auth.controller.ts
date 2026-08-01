@@ -135,13 +135,16 @@ const updateProfile = catchAsync(
 
 const getAllUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await authService.getAllUserFromDB();
+    const query = req.query;
+
+    const result = await authService.getAllUserFromDB(query);
 
     sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,
       message: "Users retrieved successfully",
-      data: result,
+      data: result.data,
+      meta: result.meta,
     });
   },
 );
