@@ -169,6 +169,19 @@ const updateUsersActiveStatus = catchAsync(
   },
 );
 
+const overview = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await authService.overviewService();
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Overview data retrieved successfully",
+      data: result,
+    });
+  },
+);
+
 export const authController = {
   registerUser,
   loginUser,
@@ -178,4 +191,5 @@ export const authController = {
   updateProfile,
   getAllUser,
   updateUsersActiveStatus,
+  overview,
 };

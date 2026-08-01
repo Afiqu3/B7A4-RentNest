@@ -9,7 +9,7 @@ import {
 import config from "../../config";
 import { jwtUtils } from "../../utils/jwt";
 import { JwtPayload, SignOptions } from "jsonwebtoken";
-import { ActiveStatus, Role } from "../../../generated/prisma/enums";
+import { ActiveStatus, PropertyStatus, RentalRequestStatus, Role } from "../../../generated/prisma/enums";
 
 const registerUserIntoDB = async (payload: IRegisterUserPayload) => {
   const { name, email, password, phone, role } = payload;
@@ -217,6 +217,86 @@ const updateUsersActiveStatusIntoDB = async (
   return updatedUserStatus;
 };
 
+const overviewService = async () => {
+  const totalUsers = await prisma.user.count();
+  const totalActiveUsers = await prisma.user.count({
+    where: {
+      activeStatus: ActiveStatus.ACTIVE,
+    },
+  });
+  const totalBlockedUsers = await prisma.user.count({
+    where: {
+      activeStatus: ActiveStatus.BLOCKED,
+    },
+  });
+  const totalTenants = await prisma.user.count({
+    where: {
+      role: Role.TENANT,
+    },
+  });
+  const totalLandlords = await prisma.user.count({
+    where: {
+      role: Role.LANDLORD,
+    },
+  });
+
+  const totalProperties = await prisma.property.count();
+  const totalRentedProperties = await prisma.property.count({
+    where: {
+      status: PropertyStatus.RENTED,
+    },
+  });
+  const totalAvailableProperties = await prisma.property.count({
+    where: {
+      status: PropertyStatus.AVAILABLE,
+    },
+  });
+
+  const totalPendingRentalRequests = await prisma.rentalRequest.count({
+    where: {
+      status: RentalRequestStatus.PENDING,
+    },
+  });
+  const totalApprovedRentalRequests = await prisma.rentalRequest.count({
+    where: {
+      status: RentalRequestStatus.APPROVED,
+    },
+  });
+  const totalRejectedRentalRequests = await prisma.rentalRequest.count({
+    where: {
+      status: RentalRequestStatus.REJECTED,
+    },
+  });
+  const totalActiveRentalRequests = await prisma.rentalRequest.count({
+    where: {
+      status: RentalRequestStatus.ACTIVE,
+    },
+  });
+  const totalCompletedRentalRequests = await prisma.rentalRequest.count({
+    where: {
+      status: RentalRequestStatus.COMPLETED,
+    },
+  });
+  const totalRentalRequests = await prisma.rentalRequest.count();
+
+  return {
+    totalUsers,
+    totalActiveUsers,
+    totalBlockedUsers,
+    totalTenants,
+    totalLandlords,
+    totalProperties,
+    totalRentedProperties,
+    totalAvailableProperties,
+    totalPendingRentalRequests,
+    totalApprovedRentalRequests,
+    totalRejectedRentalRequests,
+    totalActiveRentalRequests,
+    totalCompletedRentalRequests,
+    totalRentalRequests,
+  };
+};
+
 export const authService = {
   registerUserIntoDB,
   loginUserIntoDB,
@@ -225,4 +305,5 @@ export const authService = {
   updateProfileIntoDB,
   getAllUserFromDB,
   updateUsersActiveStatusIntoDB,
+  overviewService,
 };

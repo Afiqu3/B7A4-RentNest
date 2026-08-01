@@ -38,5 +38,6 @@ router.put(
   validateRequest(updateActiveStatusSchema),
   authController.updateUsersActiveStatus,
 );
+router.get("/overview", auth(Role.ADMIN), authController.overview);
 
 export const authRouter = router;
