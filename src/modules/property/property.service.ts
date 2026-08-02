@@ -104,12 +104,19 @@ const getPropertyByIdFromDB = async (propertyId: string) => {
   return result;
 };
 
-const getAllMyPropertyFromDB = async (landlordId: string) => {
-  const result = await prisma.property.findMany({
+const getAllMyPropertyFromDB = async (landlordId: string, query: IPropertyQuery) => {
+  const limit = query.limit ? Number(query.limit) : 10;
+  const page = query.page ? Number(query.page) : 1;
+  const skip = (page - 1) * limit;
+
+  const properties = await prisma.property.findMany({
     where: {
       landlordId,
       deletedAt: null,
     },
+    take: limit,
+    skip: skip,
+    
     include: {
       category: {
         select: {
@@ -125,7 +132,22 @@ const getAllMyPropertyFromDB = async (landlordId: string) => {
     },
   });
 
-  return result;
+ const totalProperties = await prisma.property.count({
+    where: {
+      landlordId,
+      deletedAt: null,
+    },
+  });
+
+  return {
+    data: properties,
+    meta: {
+      page: page,
+      limit: limit,
+      total: totalProperties,
+      totalPages: Math.ceil(totalProperties / limit),
+    },
+  };
 };
 
 const getAllAvailablePropertyFromDB = async (query: IPropertyQuery) => {

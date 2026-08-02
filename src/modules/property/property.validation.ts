@@ -12,6 +12,11 @@ export const createPropertySchema = z.object({
     .trim()
     .min(10, "description must be at least 10 characters")
     .max(5000),
+  image: z
+    .string()
+    .trim()
+    .min(5, "image must be at least 5 characters")
+    .max(500),
   location: z
     .string()
     .trim()

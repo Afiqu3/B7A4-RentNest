@@ -78,14 +78,16 @@ const getPropertyById = catchAsync(
 const getAllMyProperty = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const landlordId = req.user?.id as string;
+    const query = req.query;
 
-    const result = await propertyService.getAllMyPropertyFromDB(landlordId);
+    const result = await propertyService.getAllMyPropertyFromDB(landlordId, query);
 
     sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,
       message: "All of your Property retrieved successfully",
-      data: result,
+      data: result.data,
+      meta: result.meta,
     });
   },
 );
