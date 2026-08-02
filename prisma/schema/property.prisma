@@ -3,6 +3,7 @@ model Property {
     title          String
     description    String
     location       String
+    image          String
     address        String
     rentAmount     Decimal         @db.Decimal(10, 2)
     bedrooms       Int             @default(1)
