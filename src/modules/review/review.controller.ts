@@ -25,6 +25,22 @@ const createReview = catchAsync(
   },
 );
 
+const isReviewExists = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const rentalRequestId = req.params?.rentalRequestId as string;
+
+    const result = await reviewService.isReviewExists(rentalRequestId);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Review existence check completed successfully",
+      data: result,
+    });
+  },
+);
+
 export const reviewController = {
   createReview,
+  isReviewExists,
 };

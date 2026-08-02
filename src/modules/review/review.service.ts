@@ -37,6 +37,16 @@ const createReviewIntoDB = async (
   return transactionResult;
 };
 
+const isReviewExists = async (rentalRequestId: string) => {
+  const review = await prisma.review.findFirst({
+    where: {
+      rentalRequestId,
+    },
+  });
+  return !!review;
+};
+
 export const reviewService = {
   createReviewIntoDB,
+  isReviewExists,
 };

@@ -14,4 +14,10 @@ router.post(
   reviewController.createReview,
 );
 
+router.get(
+  "/:rentalRequestId/exists",
+  auth(Role.TENANT),
+  reviewController.isReviewExists,
+);
+
 export const reviewRouter = router;
