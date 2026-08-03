@@ -40,7 +40,23 @@ const isReviewExists = catchAsync(
   },
 );
 
+const getReviewsForLandlord = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const landlordId = req.user?.id as string;
+
+    const result = await reviewService.getReviewsForLandlordFromDB(landlordId);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Reviews retrieved successfully",
+      data: result,
+    });
+  },
+);
+
 export const reviewController = {
   createReview,
   isReviewExists,
+  getReviewsForLandlord,
 };

@@ -46,7 +46,19 @@ const isReviewExists = async (rentalRequestId: string) => {
   return !!review;
 };
 
+const getReviewsForLandlordFromDB = async (landlordId: string) => {
+  const reviews = await prisma.review.findMany({
+    where: {
+      property: {
+        landlordId,
+      },
+    },
+  });
+  return reviews;
+};
+
 export const reviewService = {
   createReviewIntoDB,
   isReviewExists,
+  getReviewsForLandlordFromDB,
 };

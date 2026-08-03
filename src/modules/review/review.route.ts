@@ -7,6 +7,12 @@ import { createReviewSchema } from "./review.validation";
 
 const router = Router();
 
+router.get(
+  "/landlord-reviews",
+  auth( Role.LANDLORD),
+  reviewController.getReviewsForLandlord,
+);
+
 router.post(
   "/:rentalRequestId",
   auth(Role.TENANT),
@@ -19,5 +25,6 @@ router.get(
   auth(Role.TENANT),
   reviewController.isReviewExists,
 );
+
 
 export const reviewRouter = router;
