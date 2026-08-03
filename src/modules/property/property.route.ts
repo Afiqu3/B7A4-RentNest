@@ -26,6 +26,11 @@ router.post(
 );
 
 router.get("/:propertyId", propertyController.getPropertyById);
+router.get(
+  "/:propertyId/user",
+  auth(Role.TENANT, Role.LANDLORD, Role.ADMIN),
+  propertyController.getPropertyByIdUser,
+);
 router.patch(
   "/:propertyId",
   auth(Role.LANDLORD),

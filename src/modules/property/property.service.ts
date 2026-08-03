@@ -89,9 +89,34 @@ const getPropertyByIdFromDB = async (propertyId: string) => {
           name: true,
         },
       },
+    },
+  });
+
+  if (result.status !== "AVAILABLE") {
+    throw new Error("Property is not Available!");
+  }
+
+  return result;
+};
+
+const getPropertyByIdUserFromDB = async (propertyId: string) => {
+  const result = await prisma.property.findFirstOrThrow({
+    where: {
+      id: propertyId,
+      deletedAt: null,
+    },
+    include: {
+      category: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
       landlord: {
         select: {
           name: true,
+          phone: true,
+          email: true,
         },
       },
     },
@@ -104,7 +129,10 @@ const getPropertyByIdFromDB = async (propertyId: string) => {
   return result;
 };
 
-const getAllMyPropertyFromDB = async (landlordId: string, query: IPropertyQuery) => {
+const getAllMyPropertyFromDB = async (
+  landlordId: string,
+  query: IPropertyQuery,
+) => {
   const limit = query.limit ? Number(query.limit) : 10;
   const page = query.page ? Number(query.page) : 1;
   const skip = (page - 1) * limit;
@@ -116,7 +144,7 @@ const getAllMyPropertyFromDB = async (landlordId: string, query: IPropertyQuery)
     },
     take: limit,
     skip: skip,
-    
+
     include: {
       category: {
         select: {
@@ -132,7 +160,7 @@ const getAllMyPropertyFromDB = async (landlordId: string, query: IPropertyQuery)
     },
   });
 
- const totalProperties = await prisma.property.count({
+  const totalProperties = await prisma.property.count({
     where: {
       landlordId,
       deletedAt: null,
@@ -294,6 +322,7 @@ export const propertyService = {
   updatePropertyIntoDB,
   deletePropertyFromDB,
   getPropertyByIdFromDB,
+  getPropertyByIdUserFromDB,
   getAllMyPropertyFromDB,
   getAllAvailablePropertyFromDB,
   getAllPropertyFromDB,
