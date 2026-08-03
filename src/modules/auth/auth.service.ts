@@ -9,7 +9,12 @@ import {
 import config from "../../config";
 import { jwtUtils } from "../../utils/jwt";
 import { JwtPayload, SignOptions } from "jsonwebtoken";
-import { ActiveStatus, PropertyStatus, RentalRequestStatus, Role } from "../../../generated/prisma/enums";
+import {
+  ActiveStatus,
+  PropertyStatus,
+  RentalRequestStatus,
+  Role,
+} from "../../../generated/prisma/enums";
 
 const registerUserIntoDB = async (payload: IRegisterUserPayload) => {
   const { name, email, password, phone, role } = payload;
@@ -178,7 +183,7 @@ const getAllUserFromDB = async (query: IUserQuery) => {
       name: {
         contains: query.search ? query.search : "",
         mode: "insensitive",
-      }
+      },
     },
     omit: {
       password: true,
@@ -297,6 +302,28 @@ const overviewService = async () => {
   };
 };
 
+const landlordOverviewService = async (landlordId: string) => {
+  const totalProperties = await prisma.property.count({
+    where: {
+      landlordId,
+    },
+  });
+  const totalActiveRequests = await prisma.rentalRequest.count({
+    where: {
+      property: {
+        landlordId,
+      },
+      status: RentalRequestStatus.ACTIVE,
+    },
+  });
+
+
+  return {
+    totalProperties,
+    totalActiveRequests,
+  };
+};
+
 export const authService = {
   registerUserIntoDB,
   loginUserIntoDB,
@@ -305,5 +332,6 @@ export const authService = {
   updateProfileIntoDB,
   getAllUserFromDB,
   updateUsersActiveStatusIntoDB,
-  overviewService,
+  landlordOverviewService,
+  overviewService
 };

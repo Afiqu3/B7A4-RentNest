@@ -39,5 +39,10 @@ router.put(
   authController.updateUsersActiveStatus,
 );
 router.get("/overview", auth(Role.ADMIN), authController.overview);
+router.get(
+  "/landlord-overview",
+  auth(Role.LANDLORD),
+  authController.landlordOverview,
+);
 
 export const authRouter = router;

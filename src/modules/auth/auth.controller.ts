@@ -182,6 +182,21 @@ const overview = catchAsync(
   },
 );
 
+const landlordOverview = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const landlordId = req.user?.id as string;
+
+    const result = await authService.landlordOverviewService(landlordId);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Landlord overview data retrieved successfully",
+      data: result,
+    });
+  },
+);
+
 export const authController = {
   registerUser,
   loginUser,
@@ -191,5 +206,6 @@ export const authController = {
   updateProfile,
   getAllUser,
   updateUsersActiveStatus,
+  landlordOverview,
   overview,
 };
