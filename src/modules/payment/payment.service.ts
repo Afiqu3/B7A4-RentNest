@@ -52,8 +52,8 @@ const createPaymentUrlForStripe = async (
       ],
       mode: "payment",
       payment_method_types: ["card"],
-      success_url: `https://rentnest-client-beta.vercel.app/dashboard/payments/success`,
-      cancel_url: `https://rentnest-client-beta.vercel.app/dashboard/payments/cancel`,
+      success_url: `${config.app_url}/dashboard/payments/success`,
+      cancel_url: `${config.app_url}/dashboard/payments/cancel`,
       metadata: {
         tenantId,
         paymentId: payment.id,
